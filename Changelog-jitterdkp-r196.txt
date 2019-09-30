@@ -1,0 +1,35 @@
+------------------------------------------------------------------------
+r196 | eridius | 2011-07-10 02:30:16 +0000 (Sun, 10 Jul 2011) | 1 line
+Changed paths:
+   M /trunk/embeds.xml
+
+Fix paths in embeds.xml
+------------------------------------------------------------------------
+r195 | eridius | 2011-07-04 03:31:46 +0000 (Mon, 04 Jul 2011) | 1 line
+Changed paths:
+   M /trunk/JitterDKP.lua
+
+Generate item quality color list instead of hardcoding
+------------------------------------------------------------------------
+r194 | eridius | 2011-07-04 03:31:42 +0000 (Mon, 04 Jul 2011) | 1 line
+Changed paths:
+   M /trunk/JitterDKP.toc
+
+Bump the TOC to 4.2
+------------------------------------------------------------------------
+r193 | eridius | 2011-07-04 03:31:37 +0000 (Mon, 04 Jul 2011) | 4 lines
+Changed paths:
+   M /trunk/Admin_Commands.lua
+   M /trunk/JitterDKP.lua
+
+Rewrite /jkdp bounty command
+
+Bounty now takes a set amount of DKP, or a percentage when given as X%.
+The set amount is per-toon. Percentage is overall.
+------------------------------------------------------------------------
+r192 | eridius | 2011-04-27 05:31:25 +0000 (Wed, 27 Apr 2011) | 1 line
+Changed paths:
+   M /trunk/Modules/Auction.lua
+
+Fix fineDKP
+------------------------------------------------------------------------

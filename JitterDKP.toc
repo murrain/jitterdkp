@@ -1,0 +1,37 @@
+## Interface: 11302
+## Title : JiTTeR d.k.p |cff3355ddv1.0.2|r
+## Name: JitterDKP
+## Author: Gresch, DiggityDanked, Buranshe with thanks to Thanah and EminentDKP
+## Version: 1.0.2.1
+## SavedVariables: JitterDKPDB
+## X-Curse-Packaged-Version: r196
+## X-Curse-Project-Name: JitterDKP
+## X-Curse-Project-ID: jitterdkp-classic
+## X-Curse-Repository-ID: wow/jitterdkp-classic/mainline
+
+## Notes: Facilitates the quantifiable fairness of dkp while requiring as much effort as group loot.
+
+## OptionalDeps: Ace3, CallbackHandler-1.0
+## X-Embeds: Ace3, CallbackHandler-1.0
+
+## X-Category: Raid
+## X-Date: November 18, 2010
+## X-Website: http://wow.curseforge.com/addons/jitterdkp/
+## X-License: Creative Commons Attribution-Noncommercial-Share Alike 3.0 License
+
+libs\LibStub\LibStub.lua
+
+#@no-lib-strip@
+embeds.xml
+#@end-no-lib-strip@
+
+libs\BetterTimer\BetterTimer.xml
+
+utilities.lua
+Guild.lua
+
+JitterDKP.lua
+Commands.lua
+Admin_Commands.lua
+
+Modules\Modules.xml
