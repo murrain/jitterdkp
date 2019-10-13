@@ -59,6 +59,3 @@ Current Admin Command List:
     '$ decay [raid]' - will decay all non-raid members or only raid members
     '$ decay_player <name>' - will decay player <name> only
     '$ debug' - print a list of settings to current chat window
-
- 
- 
