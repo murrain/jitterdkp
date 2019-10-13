@@ -51,7 +51,7 @@ Current Admin Command List:
 
     '$ auction' - begin an auction (must be looting)
     '$ bounty X' - distribute X% of the bounty pool to the raid
-    $ lifetime' - generate a list of the highest lifetime dkp earners in the raid
+    '$ lifetime' - generate a list of the highest lifetime dkp earners in the raid
     '$ reraid' - re-initialize the raid session, including adding missing players to database.
     '$ vanity' - do a vanity item roll for each player in the raid. Each roll is weighted by that player's lifetime earned dkp.
     '$ reset X' - set the lifetime earned dkp of player X to 0 (does not change current dkp). Designed for use after winning a vanity item.
