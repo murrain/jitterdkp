@@ -2,7 +2,7 @@
 --
 -- This addon is written and copyrighted by:
 --   Danked @ Nordrassil
---   Gresch @ Nordrassil
+--   Gresch @ Incendius
 --   Buranshe @ Nordrassil
 --
 -- Rewrite of and incoporates previous work by Thanah and EminentDKP
