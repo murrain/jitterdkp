@@ -126,22 +126,24 @@ function Auction:LOOT_OPENED()
 		local loot = self.data.loot
 		table.wipe(loot)
 		for i = 1, GetNumLootItems() do
-			local lootIcon, lootName, lootQuantity, currencyID, lootQuality, locked, isQuestItem, questID, isActive = GetLootSlotInfo(i)
-			if lootQuantity > 0 and lootQuality >= JitterDKP.db.profile.loot_threshold then
-				local link = GetLootSlotLink(i)
-				local inserted = false
-				for j,v in ipairs(loot) do
-					if compareLinks(link, v.link) then
-						table.insert(v.idxs, i)
-						inserted = true
-						break
+			if LootSlotHasItem(i) then
+				local lootIcon, lootName, lootQuantity, currencyID, lootQuality, locked, isQuestItem, questID, isActive = GetLootSlotInfo(i)
+				if lootQuantity > 0 and lootQuality >= JitterDKP.db.profile.loot_threshold then
+					local link = GetLootSlotLink(i)
+					local inserted = false
+					for j,v in ipairs(loot) do
+						if compareLinks(link, v.link) then
+							table.insert(v.idxs, i)
+							inserted = true
+							break
+						end
 					end
-				end
-				if not inserted then
-					table.insert(loot, {
-						link = link,
-						idxs = {i}
-					})
+					if not inserted then
+						table.insert(loot, {
+							link = link,
+							idxs = {i}
+						})
+					end
 				end
 			end
 		end
@@ -252,7 +254,6 @@ function Auction:Auction()
 	for i = 1, MAX_RAID_MEMBERS do
 		local name = GetMasterLootCandidate(1,i)
 		if name then
-			print("Name: " .. name .. " is eligible for loot.")
 			members[name] = i
 		end
 	end
