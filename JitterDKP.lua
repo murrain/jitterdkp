@@ -35,7 +35,7 @@ local ADDON_MSG_PREFIX = addonName
 local POPUP_NAME_I_AGREE = "JITTERDKP_I_AGREE_POPUP"
 local POPUP_NAME_YES_NO = "JITTERDKP_YES_NO_POPUP"
 
-local BOUNTY_DEFAULT = 1000000
+local BOUNTY_DEFAULT = 500000
 
 local defaults = {
 	profile = {
@@ -563,7 +563,14 @@ function JitterDKP:BountyPaid(sender, amount, isPercent)
 	reward = playerReward * numRaid
 	local num_awarded = 0
 	for i = 1, numRaid do
-		local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(i)
+		local fullname, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(i)
+		local words = {}
+		for word in fullname:gmatch("([^-]+)") do
+			table.insert(words,word)
+		end
+		name = words[1]
+		realm = words[2]
+
 		if name and (online or self.db.profile.award_dkp_to_standby) then
 			self.dkp:AddDKP(name, playerReward)
 			self:sendWhisper(name, "Awarded " .. playerReward .. " DKP")
@@ -640,7 +647,6 @@ function JitterDKP:VanityRankings()
 		
 		if name then
 			local _,lifetime = self.dkp:GetDKP(name)
-			print(name .. " " .. lifetime)
 			if lifetime then
 				local roll = math.floor(math.random(lifetime))/1000
 				table.insert(rolls, {["name"]=name, ["roll"]=roll})
