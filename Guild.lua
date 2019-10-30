@@ -40,8 +40,14 @@ function guild:OnEnable()
 end
 
 function guild:Hook_GuildRosterSetPublicNote(idx, note)
-	local name = GetGuildRosterInfo(idx)
-	if not name then return end -- wtf?
+	local fullname = GetGuildRosterInfo(idx)
+	if not fullname then return end -- wtf?
+	for word in fullname:gmatch("([^-]+)") do
+		table.insert(words,word)
+	end
+	name = words[1]
+	realm = words[2]
+
 	local info = self.guild_info[name]
 	if info then
 		info.note.note = note
@@ -53,8 +59,14 @@ function guild:Hook_GuildRosterSetPublicNote(idx, note)
 end
 
 function guild:Hook_GuildRosterSetOfficerNote(idx, note)
-	local name = GetGuildRosterInfo(idx)
-	if not name then return end -- wtf?
+	local fullname = GetGuildRosterInfo(idx)
+	local words = {}
+	if not fullname then return end -- wtf?
+	for word in fullname:gmatch("([^-]+)") do
+		table.insert(words,word)
+	end
+	name = words[1]
+	realm = words[2]
 	local info = self.guild_info[name]
 	if info then
 		info.officernote.note = note
@@ -138,7 +150,12 @@ function guild:GUILD_ROSTER_UPDATE(event, update)
 		for _,name in self.cachedPlayers do
 			local info = self.guild_info[name]
 			if info then
-				local name, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName, achievementPoints, achievementRank, isMobile = GetGuildRosterInfo(info.index)
+				local fullname, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName, achievementPoints, achievementRank, isMobile = GetGuildRosterInfo(info.index)
+				for word in fullname:gmatch("([^-]+)") do
+					table.insert(words,word)
+				end
+				name = words[1]
+				realm = words[2]
 				if name ~= info.name then
 					-- indexes changed? Weird. Rescan the guild
 					self:ScanGuild()
@@ -162,8 +179,14 @@ function guild:ScanGuild()
 		return
 	end
 	for i = 1, GetNumGuildMembers() do
-		local name, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName, achievementPoints, achievementRank, isMobile = GetGuildRosterInfo(i)
+		local words = {}
+		local fullname, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName, achievementPoints, achievementRank, isMobile = GetGuildRosterInfo(i)
 		-- re-use tables if we can, to help the GC
+		for word in fullname:gmatch("([^-]+)") do
+			table.insert(words,word)
+		end
+		name = words[1]
+		realm = words[2]
 		local entry = self.guild_info[name] or {note={}, officernote={}}
 		entry.index = i
 		entry.rank = rank
@@ -200,7 +223,13 @@ function guild:validateIndexes(names)
 	for i,name in ipairs(names) do
 		local info = self.guild_info[name]
 		if info then
-			local gname = GetGuildRosterInfo(info.index)
+			local fullname = GetGuildRosterInfo(info.index)
+			local words = {}
+			for word in fullname:gmatch("([^-]+)") do
+				table.insert(words,word)
+			end
+			gname = words[1]
+			realm = words[2]
 			if gname ~= name then
 				self:ScanGuild()
 				break

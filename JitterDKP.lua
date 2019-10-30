@@ -190,8 +190,13 @@ function JitterDKP:LoadGuildInfo()
 		self.info.officers = {}
 		self.info.num_guild_members = GetNumGuildMembers()
 		for i = 1, self.info.num_guild_members do
-			local name, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName = GetGuildRosterInfo(i)
-
+			local words = {}
+			local fullname, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName = GetGuildRosterInfo(i)
+			for word in fullname:gmatch("([^-]+)") do
+				table.insert(words,word)
+			end
+			name = words[1]
+			realm = words[2]
 			if self.info.officer_ranks[rankIndex] then  -- set officers
 				table.insert(self.info.officers, name);
 			end
@@ -342,7 +347,14 @@ local function iterateCommandResults(msg, f)
 end
 
 -- Interprets whispers directed at the JitterDKP
-function JitterDKP:CHAT_MSG_WHISPER(event, message, sender)
+function JitterDKP:CHAT_MSG_WHISPER(event, message, senderfull)
+	local words = {}
+	for word in senderfull:gmatch("([^-]+)") do
+		table.insert(words,word)
+	end
+	sender = words[1]
+	realm = words[2]
+
 	if message:sub(1, 2) ~= "$ " then return end
 
 	if not self:playerIsOfficer() then
@@ -472,12 +484,12 @@ end
 -- decays the DKP of the entire guild and redistributes to the current raid
 function JitterDKP:DecayGuild()
 	assert(self:playerIsOfficer())
-	if GetNumRaidMembers() == 0 then
+	if GetNumGroupMembers() == 0 then
 		self:printConsoleMessage("You cannot decay the guild without being in a raid")
 		return
 	end
 	self:displayYesNoAlert("Are you sure you wish to decay the guild? The amount decayed is " .. self.db.profile.dkp_decay_percent .. "%% and the amount redistributed to the raid is " .. self.db.profile.decay_redistribution_percent .. "%%.", function ()
-		local num_raid = GetNumRaidMembers()
+		local num_raid = GetNumGroupMembers()
 		if num_raid == 0 then
 			self:printConsoleMessage("You cannot decay the guild without being in a raid")
 			return
@@ -540,7 +552,7 @@ function JitterDKP:BountyPaid(sender, amount, isPercent)
 	assert(type(amount) == "number")
 
 	-- amount is an integral percentage
-	local numRaid = GetNumRaidMembers()
+	local numRaid = GetNumGroupMembers()
 	local reward, playerReward
 	if isPercent then
 		reward = self.dkp:GetBounty()*(amount/100)

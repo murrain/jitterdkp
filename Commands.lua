@@ -22,7 +22,13 @@ local commands = addonTable.commands
 
 commands["balance"] = {
 	func = function (self, info)
-		return self:showBalance(info.sender)
+		local words = {}
+		for word in info.sender:gmatch("([^-]+)") do
+			table.insert(words,word)
+		end
+		name = words[1]
+		realm = words[2]
+		return self:showBalance(name)
 	end,
 	help = "'$command' to check your current balance"
 }

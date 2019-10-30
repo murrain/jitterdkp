@@ -55,10 +55,17 @@ function Auction:OnEnable()
 
 	-- set up command filter for requires_auction
 	JitterDKP:RegisterCommandFilter("requires_auction", function (command, message, args, sender)
+		local words = {}
+		for word in sender:gmatch("([^-]+)") do
+			table.insert(words,word)
+		end
+		name = words[1]
+		realm = words[2]
+
 		if command.requires_auction then
 			if not self:IsActive() then
 				return false, "There is no active auction."
-			elseif not self.data.lootEligibleMembers[sender] then
+			elseif not self.data.lootEligibleMembers[name] then
 				return false, "You are not eligible to participate in the current auction."
 			end
 		elseif command.requires_auction == false then
@@ -99,7 +106,7 @@ function Auction:RAID_ROSTER_UPDATE()
 	local lootmethod, masterLooterPartyID = GetLootMethod()
 
 	if lootmethod == "master" and masterLooterPartyID == 0 then
-		if GetNumRaidMembers() > 15 then
+		if GetNumGroupMembers() > 15 then
 			if (JitterDKP.db.char.lastAnnounce or 0) < JitterDKP.info.today then
 				JitterDKP:printConsoleMessage("Active - Whisper yourself '$ admin' for admin commands.")
 				JitterDKP:broadcastToRaid("Active - Whisper '$ help' for commands.")
@@ -119,8 +126,8 @@ function Auction:LOOT_OPENED()
 		local loot = self.data.loot
 		table.wipe(loot)
 		for i = 1, GetNumLootItems() do
-			local lootIcon, lootName, lootQuantity, rarity = GetLootSlotInfo(i)
-			if lootQuantity > 0 and rarity >= JitterDKP.db.profile.loot_threshold then
+			local lootIcon, lootName, lootQuantity, currencyID, lootQuality, locked, isQuestItem, questID, isActive = GetLootSlotInfo(i)
+			if lootQuantity > 0 and lootQuality >= JitterDKP.db.profile.loot_threshold then
 				local link = GetLootSlotLink(i)
 				local inserted = false
 				for j,v in ipairs(loot) do
@@ -243,8 +250,9 @@ function Auction:Auction()
 
 	local members = {}
 	for i = 1, MAX_RAID_MEMBERS do
-		local name = GetMasterLootCandidate(i)
+		local name = GetMasterLootCandidate(1,i)
 		if name then
+			print("Name: " .. name .. " is eligible for loot.")
 			members[name] = i
 		end
 	end
@@ -262,7 +270,7 @@ end
 function Auction:ManualAuction(link)
 	assert(not self:IsActive())
 	local members = {}
-	for i = 1, GetNumRaidMembers() do
+	for i = 1,  GetNumGroupMembers() do
 		local name = GetRaidRosterInfo(i)
 		if name then
 			members[name] = i
@@ -599,7 +607,7 @@ function Auction:AwardRaidSpentDKP(winners, winningBid, forceStandby)
 	end
 	local members = {}
 	if JitterDKP.db.profile.award_dkp_to_standby or forceStandby then
-		for i = 1, GetNumRaidMembers() do
+		for i = 1, GetNumGroupMembers() do
 			local name = GetRaidRosterInfo(i)
 			if name and not iswinner[name] then
 				table.insert(members, name)
