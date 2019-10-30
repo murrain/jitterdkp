@@ -629,9 +629,18 @@ end
 function JitterDKP:VanityRankings()
 	local rolls = {}
 	for tf = 1, GetNumGroupMembers() do
-		local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(tf)
+		local fullname, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(tf)
+		local words = {}
+		for word in fullname:gmatch("([^-]+)") do
+			table.insert(words,word)
+		end
+
+		name = words[1]
+		realm = words[2]
+		
 		if name then
 			local _,lifetime = self.dkp:GetDKP(name)
+			print(name .. " " .. lifetime)
 			if lifetime then
 				local roll = math.floor(math.random(lifetime))/1000
 				table.insert(rolls, {["name"]=name, ["roll"]=roll})
@@ -642,7 +651,7 @@ function JitterDKP:VanityRankings()
 	table.sort(rolls, function(a,b) return a.roll > b.roll end)
 	
 	self:broadcastToRaid("Vanity item rolls weighted by lifetime earned dkp:")
-	for i,v in ipairs(rankings) do
+	for i,v in ipairs(rolls) do
 		self:broadcastToRaid(i .. " - " .. v.name .. " - " .. v.roll, true)
 	end
 end
