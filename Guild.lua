@@ -41,6 +41,7 @@ end
 
 function guild:Hook_GuildRosterSetPublicNote(idx, note)
 	local fullname = GetGuildRosterInfo(idx)
+	local words = {}
 	if not fullname then return end -- wtf?
 	for word in fullname:gmatch("([^-]+)") do
 		table.insert(words,word)
