@@ -310,7 +310,13 @@ function JitterDKP:ValidateCommand(info, message, args, prefix)
 		end
 		local is_in_raid = false
 		for i = 1, num_raid do
-			local name = GetRaidRosterInfo(i)
+			local fullname = GetRaidRosterInfo(i)
+			words = {}
+			for word in fullname:gmatch("([^-]+)") do
+				table.insert(words,word)
+			end
+			name = words[1]
+			realm = words[2]
 			if name == info.sender then
 				is_in_raid = true
 				break
@@ -497,7 +503,13 @@ function JitterDKP:DecayGuild()
 		-- only redistribute dkp back to guild members
 		local members = {}
 		for i = 1, num_raid do
-			local name = GetRaidRosterInfo(i)
+			local fullname = GetRaidRosterInfo(i)
+			words = {}
+			for word in fullname:gmatch("([^-]+)") do
+				table.insert(words,word)
+			end
+			name = words[1]
+			realm = words[2]
 			if name and guild:IsInGuild(name) then
 				table.insert(members, name)
 			end
@@ -595,7 +607,14 @@ end
 function JitterDKP:generateRankings()
 	local currentRaid = {}
 	for sa = 1, GetNumGroupMembers() do
-		local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(sa)
+		local fullname, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(sa)
+		local words = {}
+		for word in fullname:gmatch("([^-]+)") do
+			table.insert(words,word)
+		end
+		name = words[1]
+		realm = words[2]
+
 		if name then
 			local current, lifetime = self.dkp:GetDKP(name)
 			if current then

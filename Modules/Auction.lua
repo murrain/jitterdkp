@@ -272,7 +272,13 @@ function Auction:ManualAuction(link)
 	assert(not self:IsActive())
 	local members = {}
 	for i = 1,  GetNumGroupMembers() do
-		local name = GetRaidRosterInfo(i)
+		local fullname = GetRaidRosterInfo(i)
+		words = {}
+		for word in fullname:gmatch("([^-]+)") do
+			table.insert(words,word)
+		end
+		name = words[1]
+		realm = words[2]
 		if name then
 			members[name] = i
 		end
@@ -609,7 +615,13 @@ function Auction:AwardRaidSpentDKP(winners, winningBid, forceStandby)
 	local members = {}
 	if JitterDKP.db.profile.award_dkp_to_standby or forceStandby then
 		for i = 1, GetNumGroupMembers() do
-			local name = GetRaidRosterInfo(i)
+			local fullname = GetRaidRosterInfo(i)
+			words = {}
+			for word in fullname:gmatch("([^-]+)") do
+				table.insert(words,word)
+			end
+			name = words[1]
+			realm = words[2]
 			if name and not iswinner[name] then
 				table.insert(members, name)
 			end
