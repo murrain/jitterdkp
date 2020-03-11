@@ -1,4 +1,4 @@
-## Interface: 11303
+## Interface: 11304
 ## Title : JiTTeR d.k.p |cff3355ddv1.0.2|r
 ## Name: JitterDKP
 ## Author: Gresch, DiggityDanked, Buranshe with thanks to Thanah and EminentDKP
