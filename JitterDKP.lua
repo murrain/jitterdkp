@@ -519,7 +519,7 @@ function JitterDKP:DecayGuild()
 		local total = 0
 		
 		for name, group, dkp in self.dkp:dkpPairsRaidGroup() do
-			if group == self.db.profile.raid_group then 
+			if group:match(self.db.profile.raid_group) then 
 				local decay = math.floor(dkp * (self.db.profile.dkp_decay_percent * 0.01))
 				total = total + decay
 				self.dkp:SubDKP(name, decay)
