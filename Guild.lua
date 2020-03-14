@@ -8,15 +8,23 @@ local utils = addonTable.utilities
 
 local ADDON_MSG_PREFIX = addonName .. "Guild"
 
+local defaults = {
+	profile = {
+		cache = {}
+	}
+}
+
 LibStub("AceEvent-3.0"):Embed(guild)
 LibStub("AceComm-3.0"):Embed(guild)
 LibStub("AceSerializer-3.0"):Embed(guild)
 LibStub("AceTimer-3.0"):Embed(guild)
 
 function guild:OnInitialize()
+	self.db = LibStub("AceDB-3.0"):New("JitterDKPDB_Data",defaults)
+
 	self.guild_info = {}
 	self.cachedPlayers = {}
-	self.lastUpdate = 0
+	self.lastUpdate = 0 
 
 	self.pendingChanges = {public = {}, officer = {}}
 	self.pendingTimer = nil
@@ -255,6 +263,11 @@ function guild:SetOfficerNote(name, note)
 		table.insert(self.cachedPlayers, name)
 		GuildRosterSetOfficerNote(info.index, note)
 	end
+	local cache_note = {}
+	cache_note["note"] = info.note.note
+	cache_note["dkp"] = note
+	cache_note["last_seen"] = date("%m/%d/%y %H:%M:%S")
+	self.db.profile.cache[name] = cache_note
 end
 
 -- bulk-set officer notes
