@@ -39,13 +39,13 @@ local BOUNTY_DEFAULT = 1000000
 
 local defaults = {
 	profile = {
-		loot_threshold = 3,
+		loot_threshold = 2,
 		minimum_bid = 50,
 		use_vickrey = true,
 		award_dkp_to_standby = true,
 		single_bid_only = false,
 		higher_bid_only = true,
-		dkp_decay_percent = 10,
+		dkp_decay_percent = 5,
 		decay_redistribution_percent = 100,
 		time_to_loot = 45,
 		break_ties = "random",
