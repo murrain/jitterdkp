@@ -35,7 +35,7 @@ local ADDON_MSG_PREFIX = addonName
 local POPUP_NAME_I_AGREE = "JITTERDKP_I_AGREE_POPUP"
 local POPUP_NAME_YES_NO = "JITTERDKP_YES_NO_POPUP"
 
-local BOUNTY_DEFAULT = 500000
+local BOUNTY_DEFAULT = 1000000
 
 local defaults = {
 	profile = {
@@ -49,6 +49,7 @@ local defaults = {
 		decay_redistribution_percent = 100,
 		time_to_loot = 45,
 		break_ties = "random",
+		raid_group = ""
 	},
 	char = {
 		lastAnnounce = 0
@@ -494,7 +495,7 @@ function JitterDKP:DecayGuild()
 		self:printConsoleMessage("You cannot decay the guild without being in a raid")
 		return
 	end
-	self:displayYesNoAlert("Are you sure you wish to decay the guild? The amount decayed is " .. self.db.profile.dkp_decay_percent .. "%% and the amount redistributed to the raid is " .. self.db.profile.decay_redistribution_percent .. "%%.", function ()
+	self:displayYesNoAlert("Are you sure you wish to decay " .. self.db.profile.raid_group .. "? The amount decayed is " .. self.db.profile.dkp_decay_percent .. "%% and the amount redistributed to the raid is " .. self.db.profile.decay_redistribution_percent .. "%%.", function ()
 		local num_raid = GetNumGroupMembers()
 		if num_raid == 0 then
 			self:printConsoleMessage("You cannot decay the guild without being in a raid")
@@ -503,7 +504,7 @@ function JitterDKP:DecayGuild()
 		-- only redistribute dkp back to guild members
 		local members = {}
 		for i = 1, num_raid do
-			local fullname = GetRaidRosterInfo(i)
+			local fullname, rank, rankIndex, level, clss, zone, note = GetRaidRosterInfo(i)
 			words = {}
 			for word in fullname:gmatch("([^-]+)") do
 				table.insert(words,word)
@@ -517,17 +518,19 @@ function JitterDKP:DecayGuild()
 		-- don't check for 0, because the player will always be in the guild
 		local total = 0
 		
-		for name, dkp in self.dkp:dkpPairs() do
-			local decay = math.floor(dkp * (self.db.profile.dkp_decay_percent * 0.01))
-			total = total + decay
-			self.dkp:SubDKP(name, decay)
+		for name, group, dkp in self.dkp:dkpPairsRaidGroup() do
+			if group:match(self.db.profile.raid_group) then 
+				local decay = math.floor(dkp * (self.db.profile.dkp_decay_percent * 0.01))
+				total = total + decay
+				self.dkp:SubDKP(name, decay)
+			end
 		end
 		local refund = total * (self.db.profile.decay_redistribution_percent * 0.01)
 		local perToon = math.floor(refund / #members)
 		for _,name in ipairs(members) do
 			self.dkp:AddDKP(name, perToon)
 		end
-		self:broadcastToGuild("Guild dkp has been decayed by " .. self.db.profile.dkp_decay_percent .. "%")
+		self:broadcastToGuild(self.db.profile.raid_group .. " dkp has been decayed by " .. self.db.profile.dkp_decay_percent .. "%")
 		self:broadcastToRaid(perToon .. " dkp has been awarded to " .. #members .. " players.")
 		self:printConsoleMessage((total - perToon * #members) .. " dkp has been lost to the bounty pool.")
 	end)
@@ -913,6 +916,11 @@ function JitterDKP:AceConfig3Options()
 						set = function(info, val) self.db.profile.decay_redistribution_percent = math.floor(val * 100) end,
 						order = 2,
 					},
+					raid_group = {
+						name = "Raid Group",
+						type = "input",
+						multiline = false;
+					},
 					decay = {
 						name = "Decay",
 						desc = "Decay the dkp of the guild and redistribute to the raid",
@@ -920,7 +928,7 @@ function JitterDKP:AceConfig3Options()
 						func = function (info)
 							self:DecayGuild()
 						end,
-						order = 3,
+						order = 4,
 					},
 				}
 			},
