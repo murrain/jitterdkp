@@ -69,7 +69,7 @@ local defaultModName = " JiTTeR "
 JitterDKP.modName = defaultModName
 
 function JitterDKP:OnInitialize()
-	self.db = LibStub("AceDB-3.0"):New("JitterDKPDB", defaults, true)
+	self.db = LibStub("AceDB-3.0"):New("JitterDKPDB_Settings", defaults, true)
 	guild:OnInitialize()
 
 	-- register options
@@ -826,45 +826,19 @@ function JitterDKP:AceConfig3Options()
 				get = function(info) return self.db.profile[info[#info]] end,
 				set = function(info, val) self.db.profile[info[#info]] = val end,
 				args = {
-					award_dkp_to_standby = {
-						name = "Award DKP to Standby",
-						desc = "Award spent DKP to standby raid members",
-						type = "toggle",
-						order = 1,
-					},
-					single_bid_only = {
-						name = "Single Bid Only",
-						desc = "Only allow one bid per player per item",
-						type = "toggle",
-						order = 2,
-					},
-					higher_bid_only = {
-						name = "Higher Bid Only",
-						desc = "Only allow players to change their bids to a higher value",
-						type = "toggle",
-						disabled = function(info) return self.db.profile.single_bid_only end,
-						get = function(info)
-							if self.db.profile.single_bid_only then
-								return false
-							else
-								return self.db.profile.higher_bid_only
-							end
-						end,
-						order = 3,
-					},
 					loot_threshold = {
 						name = "Loot Threshold",
 						desc = "Threshold for item rarity at which items are put up for auction",
 						type = "select",
 						values = function()
 							local values = {}
-							for i = 0, 7 do
+							for i = 0, 5 do
 								values[i] = "|c"..select(4,GetItemQualityColor(i)).._G["ITEM_QUALITY"..i.."_DESC"].."|r"
 							end
 							return values
 						end,
 						style="dropdown",
-						order = 4,
+						order = 1,
 					},
 					time_to_loot = {
 						name = "Time to Loot",
@@ -876,7 +850,7 @@ function JitterDKP:AceConfig3Options()
 						softMax = 120,
 						step = 1,
 						bigStep = 5,
-						order = 5,
+						order = 2,
 					},
 					minimum_bid = {
 						name = "Minimum Bid",
@@ -888,22 +862,13 @@ function JitterDKP:AceConfig3Options()
 						softMin = 25,
 						softMax = 250,
 						bigStep = 25,
-						order = 6,
+						order = 3,
 					},
-					use_vickrey = {
-						name = "Use Vickrey-Style Auction",
+					award_dkp_to_standby = {
+						name = "Award DKP to Offline",
+						desc = "Award spent DKP to offline raid members",
 						type = "toggle",
-						order = 8,
-					},
-					break_ties = {
-						name = "Tie-Breaking",
-						type = "select",
-						values = {
-							random="Award randomly",
-							first="Award to first bidder",
-						},
-						style = "dropdown",
-						order = 9,
+						order = 4,
 					},
 					show = {
 						name = "Show Interface Options",
