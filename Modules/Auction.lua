@@ -21,7 +21,16 @@ local STATE_AUCTION_PAUSED = 3
 local STATE_AWARDING = 4
 local STATE_AWARDING_PAUSED = 5
 
+local defaults = {
+	profile = {
+		player_history = {},
+		item_history = {}
+	}
+}
+
 function Auction:OnInitialize()
+	self.db = LibStub("AceDB-3.0"):New("JitterDKPDB_History",defaults)
+
 	self.state = STATE_START
 	self.data = {
 		loot = {}, -- [i] = { link = link, idxs = {1, 2, 3} }
@@ -239,6 +248,31 @@ function Auction:AddBid(sender, bid)
 	end
 	JitterDKP:printConsoleMessage("Added bid for " .. sender .. " of " .. bid, true)
 	return true, "Your bid of " .. bid .. " dkp has been successfully registered. Good Luck."
+end
+
+function Auction:AddHistory(winners,points,item)
+	for _,winner in ipairs(winners) do
+		local p_history = {
+			itemname = GetItemInfo(item),
+			price = points,
+			date = date("%m/%d/%Y")
+		}
+		local i_history = {
+			player = winner,
+			price = points,
+			date = date("%m/%d/%Y")
+		}
+		local p = self.db.profile.player_history[winner]
+		if p == nil then 
+			self.db.profile.player_history[winner] = {}	
+		end
+		table.insert(self.db.profile.player_history[winner],p_history)
+		local i = self.db.profile.item_history[GetItemInfo(item)]
+		if i == nil then 
+			self.db.profile.item_history[GetItemInfo(item)] = {}
+		end
+		table.insert(self.db.profile.item_history[GetItemInfo(item)],i_history)
+	end
 end
 
 -- Auction()
@@ -518,12 +552,11 @@ function Auction:ProcessBids()
 		else -- not vickrey
 			points = bids[winner].Bid
 		end
-
 		table.insert(winners, bids[winner].Name)
 		table.remove(bids, winner)
 	end
-
-	-- send message to raid award for all wwinners, award DKP, and transition to awarding state
+	self:AddHistory(winners,points,link)
+	-- send message to raid award for all winners, award DKP, and transition to awarding state
 	self.state = STATE_AWARDING
 	table.wipe(self.data.winners)
 	if #winners > 0 then

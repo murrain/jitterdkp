@@ -2,15 +2,15 @@
 ## Title : JiTTeR d.k.p |cff3355ddv1.0.2|r
 ## Name: JitterDKP
 ## Author: Gresch, DiggityDanked, Buranshe with thanks to Thanah and EminentDKP
-## Version: 1.0.2.2
-## SavedVariablesPerCharacter: JitterDKPDB_Settings, JitterDKPDB_Data
+## Version: 1.2.0
+## SavedVariablesPerCharacter: JitterDKPDB_Settings, JitterDKPDB_Data, JitterDKPDB_History
 ## Notes: Facilitates the quantifiable fairness of dkp while requiring as much effort as group loot.
 
 ## OptionalDeps: Ace3, CallbackHandler-1.0
 ## X-Embeds: Ace3, CallbackHandler-1.0
 
 ## X-Category: Raid
-## X-Date: Decenmber 11th, 2019
+## X-Date: March 14th, 2020
 ## X-Website: http://wow.curseforge.com/addons/jitterdkp-classic/
 ## X-License: Creative Commons Attribution-Noncommercial-Share Alike 3.0 License
 
