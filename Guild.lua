@@ -266,7 +266,7 @@ function guild:SetOfficerNote(name, note)
 	local cache_note = {}
 	cache_note["note"] = info.note.note
 	cache_note["dkp"] = note
-	cache_note["last_seen"] = date("%m/%d/%y %H:%M:%S")
+	cache_note["last_seen"] = date("%m/%d/%y")
 	self.db.profile.cache[name] = cache_note
 end
 
