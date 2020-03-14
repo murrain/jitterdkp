@@ -113,3 +113,15 @@ function DKP:dkpPairs()
 		return k, parseOfficerNote(v)
 	end, s, var
 end
+
+-- dkpPairsRaidGroup(raid_group)
+-- Iterates over the DKP for every member with a public note matching self.db.profile.raid_group
+-- It returns 3 values: name, current dkp, lifetime dkp
+function DKP:dkpPairsRaidGroup()
+	local f, s, var = guild:OfficerNotePairsRaidGroup()
+	return function (s, var)
+		local k,v = f(s, var)
+		if k == nil then return nil end
+		return k, v.group, parseOfficerNote(v.note)
+	end, s, var
+end

@@ -311,10 +311,26 @@ local function makeIter(key)
 		return k, v[key].note
 	end
 end
+
+local function makeIterRaidGroup(key)
+	return function (t, obj)
+		local raider = {}
+		local k,v = next(t, obj)
+		if k == nil then return nil end
+		raider.group = v.note.note
+		raider.note = v[key].note
+		return k, raider
+	end
+end
+
 function guild:GuildNotePairs()
 	return makeIter("note"), self.guild_info, nil
 end
 
 function guild:OfficerNotePairs()
 	return makeIter("officernote"), self.guild_info, nil
+end
+
+function guild:OfficerNotePairsRaidGroup(raid_group)
+	return makeIterRaidGroup("officernote"), self.guild_info, nil
 end
