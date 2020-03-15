@@ -6,6 +6,7 @@ local JitterDKP = LibStub("AceAddon-3.0"):GetAddon(addonName)
 
 local utils = addonTable.utilities
 local guild = addonTable.guild
+local auction = addonTable.Auction
 
 local compareLinks = utils.compareLinks
 local mergesort = utils.mergesort
@@ -272,6 +273,32 @@ function Auction:AddHistory(winners,points,item)
 			self.db.profile.item_history[GetItemInfo(item)] = {}
 		end
 		table.insert(self.db.profile.item_history[GetItemInfo(item)],i_history)
+	end
+end
+
+function Auction:ShowHistory(sender, player)
+	local iname = GetItemInfo(player)
+	local p = self.db.profile.player_history[player]
+	local i = self.db.profile.item_history[iname]
+	if p == nil and i == nil then
+		JitterDKP:sendWhisper(sender, "I haven't seen that player or that item. Player names are case sensitive.")
+	elseif p then
+		JitterDKP:sendWhisper(sender, "History for " .. player)
+		for _,v in pairs(p) do
+			local date = v.date
+			local itemName, itemLink = GetItemInfo(v.itemname)
+			local dkp = v.price
+			JitterDKP:sendWhisper(sender, tostring(v.date) .. ": ".. itemLink .. " ".. tostring(dkp) .. " DKP")
+		end
+	else 
+		itemName, itemLink = GetItemInfo(player)
+		JitterDKP:sendWhisper(sender, "History for " .. itemLink)
+		for _,v in pairs(i) do
+			local date = v.date
+			local winner = v.player
+			local dkp = v.price
+			JitterDKP:sendWhisper(sender, tostring(v.date) .. ": ".. winner .. " ".. tostring(dkp) .. " DKP")
+		end
 	end
 end
 

@@ -32,6 +32,22 @@ commands["balance"] = {
 	end,
 	help = "'$command' to check your current balance"
 }
+commands["history"] = {
+	func = function (self, info, player)
+		local Auction = JitterDKP:GetModule("Auction")
+		local words = {}
+		for word in info.sender:gmatch("([^-]+)") do
+			table.insert(words,word)
+		end
+		name = words[1]
+		realm = words[2]
+		if not player then
+			player = name
+		end
+		Auction:ShowHistory(name,player)
+	end,
+	help ="'$command' to check purchase history. You can add a player or item to see history for that instead."
+}
 commands["check"] = {
 	func = function (self, info, player)
 		if not player then
