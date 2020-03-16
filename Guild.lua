@@ -148,7 +148,10 @@ function guild:OnCommReceived(prefix, message, channel, sender)
 			GuildRoster()
 		end -- N or O
 		if command == "H" then
-			
+			local success, history = self:Deserialize(rest)
+			local Auction = JitterDKP:GetModule("Auction")
+			Auction:AddHistory(history.winners,history.points,"item:"..history.item,history.time)
+			JitterDKP:printConsoleMessage("Item history comm received from " .. sender)
 		end -- H
 	end
 end
