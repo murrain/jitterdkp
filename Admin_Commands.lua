@@ -123,3 +123,12 @@ admin_commands["transferDKP"] = {
 	help = "'$command fromPlayer toPlayer amount' to transfer amount dkp from fromPlayer to toPlayer.",
 	requires_auction = false,
 }
+
+admin_commands["clearHistory"] = {
+	func = function(self,info)
+		local Auction = JitterDKP:GetModule("Auction")
+		Auction:ClearItemHistory()
+	end,
+	help = "'$command' clears all History. This is destructive and non reversable",
+	requires_auction = false,
+}

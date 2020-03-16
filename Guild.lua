@@ -26,7 +26,7 @@ function guild:OnInitialize()
 	self.cachedPlayers = {}
 	self.lastUpdate = 0 
 
-	self.pendingChanges = {public = {}, officer = {}}
+	self.pendingChanges = {public = {}, officer = {}, history = {player = {}, item = {} }}
 	self.pendingTimer = nil
 
 	hooksecurefunc("GuildRosterSetPublicNote", function (...)
@@ -147,6 +147,9 @@ function guild:OnCommReceived(prefix, message, channel, sender)
 			end
 			GuildRoster()
 		end -- N or O
+		if command == "H" then
+			
+		end -- H
 	end
 end
 

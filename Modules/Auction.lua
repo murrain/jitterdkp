@@ -251,28 +251,43 @@ function Auction:AddBid(sender, bid)
 	return true, "Your bid of " .. bid .. " dkp has been successfully registered. Good Luck."
 end
 
-function Auction:AddHistory(winners,points,item)
+	-- AddHistory(winners,points,item,time)
+	-- Adds a history to 3 tables player, item, and date
+	-- Using seperate tables to make searching for players/items/dates faster at the cost of extra disk space (a few kB)
+
+function Auction:AddHistory(winners,points,item,time)
+	local type, itemId = strsplit(":", item)
 	for _,winner in ipairs(winners) do
 		local p_history = {
-			itemname = GetItemInfo(item),
+			item = itemId,
 			price = points,
-			date = date("%m/%d/%Y")
+			date = time
 		}
 		local i_history = {
 			player = winner,
 			price = points,
-			date = date("%m/%d/%Y")
+			date = time
+		}
+		local d_history = {
+			player = winner,
+			price = points,
+			item = itemId
 		}
 		local p = self.db.profile.player_history[winner]
 		if p == nil then 
 			self.db.profile.player_history[winner] = {}	
 		end
 		table.insert(self.db.profile.player_history[winner],p_history)
-		local i = self.db.profile.item_history[GetItemInfo(item)]
+		local i = self.db.profile.item_history[itemId]
 		if i == nil then 
-			self.db.profile.item_history[GetItemInfo(item)] = {}
+			self.db.profile.item_history[itemId] = {}
 		end
-		table.insert(self.db.profile.item_history[GetItemInfo(item)],i_history)
+		table.insert(self.db.profile.item_history[itemId],i_history)
+		local d = self.db.profile.date_history[time]
+		if d == nil then
+			self.db.profile.item_history[time] = {}
+		end
+		table.insert(self.db.profile.date_history[time],d_history)
 	end
 end
 
@@ -280,26 +295,45 @@ function Auction:ShowHistory(sender, player)
 	local iname = GetItemInfo(player)
 	local p = self.db.profile.player_history[player]
 	local i = self.db.profile.item_history[iname]
-	if p == nil and i == nil then
-		JitterDKP:sendWhisper(sender, "I haven't seen that player or that item. Player names are case sensitive.")
-	elseif p then
-		JitterDKP:sendWhisper(sender, "History for " .. player)
+	local d = self.db.profile.date_history[player]
+	if p then -- we found a player history
+		JitterDKP:sendWhisper(sender, "History for player " .. player)
 		for _,v in pairs(p) do
 			local date = v.date
-			local itemName, itemLink = GetItemInfo(v.itemname)
+			local itemName, itemLink = GetItemInfo(v.item)
 			local dkp = v.price
 			JitterDKP:sendWhisper(sender, tostring(v.date) .. ": ".. itemLink .. " ".. tostring(dkp) .. " DKP")
 		end
-	else 
+	elseif i then -- we found an item history
 		itemName, itemLink = GetItemInfo(player)
-		JitterDKP:sendWhisper(sender, "History for " .. itemLink)
+		JitterDKP:sendWhisper(sender, "History for item " .. itemLink)
 		for _,v in pairs(i) do
 			local date = v.date
 			local winner = v.player
 			local dkp = v.price
 			JitterDKP:sendWhisper(sender, tostring(v.date) .. ": ".. winner .. " ".. tostring(dkp) .. " DKP")
 		end
+	elseif d then -- we found a date history
+		JitterDKP:sendWhisper(sender, "History for date " .. player)
+		for _,v in pairs(d) do
+			local winner = v.player
+			local dkp = v.price
+			local itemName, itemLink = GetItemInfo(v.item)
+			JitterDKP:sendWhisper(sender, winner .. " paid ".. tostring(dkp) .. " DKP for ".. itemLink)
+		end
+	else
+		JitterDKP:sendWhisper(sender, "I haven't seen that player or that item. Player names are case sensitive.")
 	end
+end
+
+function Auction:ClearItemHistory()
+	JitterDKP:displayYesNoAlert("Are you sure you wish to reset History?",function()
+		self.db.profile.player_history = {}
+		self.db.profile.item_history = {}
+		self.db.profile.date_history = {}
+		JitterDKP:printConsoleMessage("History cleared for players, items, and dates.")
+	end
+	)
 end
 
 -- Auction()
@@ -582,7 +616,8 @@ function Auction:ProcessBids()
 		table.insert(winners, bids[winner].Name)
 		table.remove(bids, winner)
 	end
-	self:AddHistory(winners,points,link)
+	local now = date("%m/%d/%Y")
+	self:AddHistory(winners,points,link,now)
 	-- send message to raid award for all winners, award DKP, and transition to awarding state
 	self.state = STATE_AWARDING
 	table.wipe(self.data.winners)
