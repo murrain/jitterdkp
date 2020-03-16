@@ -25,7 +25,8 @@ local STATE_AWARDING_PAUSED = 5
 local defaults = {
 	profile = {
 		player_history = {},
-		item_history = {}
+		item_history = {},
+		date_history = {},
 	}
 }
 
@@ -46,6 +47,27 @@ function Auction:OnInitialize()
 		link = nil,
 		manual = false,
 	}
+
+	self:PreCacheItems()
+end
+
+function Auction:PreCacheItems()
+	local numberCached = 0
+	local addedtoCache = 0
+	for itemId,_ in pairs(self.db.profile.item_history) do
+		itemName, itemLink = GetItemInfo(itemId)
+		if itemLink == nil then
+			addedtoCache = addedtoCache + 1
+			local item = Item:CreateFromItemID(tonumber(itemId))
+			item:ContinueOnItemLoad(function()
+				local itemLink = item:GetItemLink()
+			end)
+		else
+			numberCached = numberCached + 1
+		end
+	end
+	JitterDKP:printConsoleMessage("Adding ".. addedtoCache .. " items to cache.")
+	JitterDKP:printConsoleMessage(numberCached .. " items cached in total.")
 end
 
 function Auction:OnEnable()
@@ -323,13 +345,20 @@ function Auction:ShowHistory(sender, player)
 		--price, player, item
 		JitterDKP:sendWhisper(sender, "History for date " .. player)
 		for _,v in pairs(d) do
-			local item = Item:CreateFromItemID(tonumber(v.item))
-			item:ContinueOnItemLoad(function()
-				local winner = v.player
-				local dkp = v.price
-				local itemLink = item:GetItemLink()
+			local itemName, itemLink = GetItemInfo(tonumber(v.item))
+			local winner = v.player
+			local dkp = v.price
+
+			if itemLink == nil then
+				local item = Item:CreateFromItemID(tonumber(v.item))
+				item:ContinueOnItemLoad(function()
+					itemLink = item:GetItemLink()
+					JitterDKP:sendWhisper(sender, winner .. " paid ".. tostring(dkp) .. " DKP for ".. itemLink)
+				end)
+			else
 				JitterDKP:sendWhisper(sender, winner .. " paid ".. tostring(dkp) .. " DKP for ".. itemLink)
-			end)
+			end
+
 		end
 	else
 		JitterDKP:sendWhisper(sender, "I haven't seen that player or that item. Player names are case sensitive.")
