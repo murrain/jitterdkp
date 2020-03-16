@@ -285,7 +285,7 @@ function Auction:AddHistory(winners,points,item,time)
 		table.insert(self.db.profile.item_history[itemId],i_history)
 		local d = self.db.profile.date_history[time]
 		if d == nil then
-			self.db.profile.item_history[time] = {}
+			self.db.profile.date_history[time] = {}
 		end
 		table.insert(self.db.profile.date_history[time],d_history)
 	end
