@@ -292,20 +292,26 @@ function Auction:AddHistory(winners,points,item,time)
 end
 
 function Auction:ShowHistory(sender, player)
-	local iname = GetItemInfo(player)
+	local type, itemId = strsplit(":", player)
 	local p = self.db.profile.player_history[player]
-	local i = self.db.profile.item_history[iname]
+	local i = self.db.profile.item_history[itemId]
 	local d = self.db.profile.date_history[player]
+	local whisperString
 	if p then -- we found a player history
+		-- price, item, date
 		JitterDKP:sendWhisper(sender, "History for player " .. player)
 		for _,v in pairs(p) do
-			local date = v.date
-			local itemName, itemLink = GetItemInfo(v.item)
-			local dkp = v.price
-			JitterDKP:sendWhisper(sender, tostring(v.date) .. ": ".. itemLink .. " ".. tostring(dkp) .. " DKP")
+			local item = Item:CreateFromItemID(tonumber(v.item))
+			item:ContinueOnItemLoad(function()
+				local date = v.date
+				local dkp = v.price
+				local itemLink = item:GetItemLink()
+				JitterDKP:sendWhisper(sender,tostring(date) .. ": ".. itemLink .. " ".. tostring(dkp) .. " DKP")
+			end)
 		end
 	elseif i then -- we found an item history
-		itemName, itemLink = GetItemInfo(player)
+		--price, player, date
+		itemName, itemLink = GetItemInfo(itemId)
 		JitterDKP:sendWhisper(sender, "History for item " .. itemLink)
 		for _,v in pairs(i) do
 			local date = v.date
@@ -314,12 +320,16 @@ function Auction:ShowHistory(sender, player)
 			JitterDKP:sendWhisper(sender, tostring(v.date) .. ": ".. winner .. " ".. tostring(dkp) .. " DKP")
 		end
 	elseif d then -- we found a date history
+		--price, player, item
 		JitterDKP:sendWhisper(sender, "History for date " .. player)
 		for _,v in pairs(d) do
-			local winner = v.player
-			local dkp = v.price
-			local itemName, itemLink = GetItemInfo(v.item)
-			JitterDKP:sendWhisper(sender, winner .. " paid ".. tostring(dkp) .. " DKP for ".. itemLink)
+			local item = Item:CreateFromItemID(tonumber(v.item))
+			item:ContinueOnItemLoad(function()
+				local winner = v.player
+				local dkp = v.price
+				local itemLink = item:GetItemLink()
+				JitterDKP:sendWhisper(sender, winner .. " paid ".. tostring(dkp) .. " DKP for ".. itemLink)
+			end)
 		end
 	else
 		JitterDKP:sendWhisper(sender, "I haven't seen that player or that item. Player names are case sensitive.")
