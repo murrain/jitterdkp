@@ -909,7 +909,7 @@ function JitterDKP:AceConfig3Options()
 						name = "Decay Redistribution",
 						desc = "Percentage of decayed DKP to redistribute",
 						type = "range",
-						min = 0.01,
+						min = 0.00,
 						max = 1.00,
 						step = 0.01,
 						isPercent = true,

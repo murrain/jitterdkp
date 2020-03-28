@@ -73,3 +73,25 @@ function utils.compareLinks(link1, link2)
 	if not link1 or not link2 then return false end
 	return link1 == link2
 end
+
+function utils.SendMessages(message, channel, target, messagesPerSecond)
+	if messagesPerSecond == nil then messagesPerSecond = 3 end
+	local messages = utils.BreakdownMessage(message)
+	for delay,body in pairs(messages) do
+	  C_Timer.After(delay / messagesPerSecond, function() SendChatMessage(body, channel, nil, target) end)
+	end
+  end
+  
+  function utils.BreakdownMessage(message)
+	local whispers = {""}
+	local current_index = 1;
+	for word in message:gmatch("%S+") do 
+	  if(string.len(whispers[current_index] .. word) >= 255) then
+		current_index = current_index + 1
+		whispers[current_index] = ""
+	  end
+		whispers[current_index] = whispers[current_index] .. " ".. word
+	end
+  
+	return whispers
+  end
