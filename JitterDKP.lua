@@ -593,7 +593,7 @@ function JitterDKP:BountyPaid(sender, amount, isPercent)
 			num_awarded = num_awarded + 1
 		end
 	end
-	self:broadcastToRaid(("A bounty of %d%s has been paid out to this raid."):format(reward, isPercent and (" (%d%% of the bounty pool)"):format(amount)))
+	self:broadcastToRaid(("A bounty of %d has been paid out to this raid."):format(reward))
 	self:broadcastToRaid(playerReward .. " dkp has been awarded to " .. num_awarded .. " players.")
 end
 
