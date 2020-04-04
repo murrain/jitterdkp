@@ -801,9 +801,26 @@ end
 Auction.commands = {
 	bid = {
 		func = function (self, info, amount)
-			if not tonumber(amount) then
+			local isPercent = false
+			local percent = 0
+
+			if not amount then 
 				return "You have not entered a bid amount. Use '"..info.command.." X' to enter a bid of X"
 			end
+
+			if amount:match("%%$") then -- look for percent based bid
+				isPercent = true
+				percent = tonumber(amount:sub(1,-2))
+			end
+
+			if not percent or (isPercent and (percent <= 0 or percent > 100)) then
+				return "Invalid percentage. Use '"..info.command.." X' where X is a DKP amount or a percentage between 1 and 100 (with %)."
+			end
+
+			if isPercent then
+				amount = ((percent / 100) * JitterDKP.dkp:GetDKP(info.sender))
+			end
+
 			local b, msg = Auction:AddBid(info.sender, tonumber(amount))
 			return msg
 		end,
