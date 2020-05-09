@@ -269,9 +269,16 @@ function guild:SetOfficerNote(name, note)
 		table.insert(self.cachedPlayers, name)
 		GuildRosterSetOfficerNote(info.index, note)
 	end
+	self:CacheNote(name,info.note.note,dkp)
+end
+
+function guild:CacheNote(name,note,dkp)
+	assert(type(name) == "string")
+	assert(type(note) == "string")
+
 	local cache_note = {}
-	cache_note["note"] = info.note.note
-	cache_note["dkp"] = note
+	cache_note["note"] = note
+	cache_note["dkp"] = dkp
 	cache_note["last_seen"] = date("%m/%d/%y")
 	self.db.profile.cache[name] = cache_note
 end

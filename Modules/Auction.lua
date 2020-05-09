@@ -813,6 +813,12 @@ Auction.commands = {
 				percent = tonumber(amount:sub(1,-2))
 			end
 
+			local lower = amount:lower()
+
+			if lower:match("hotpenis") or lower:match("hot penis") then
+				return "Fuck off " .. info.sender
+			end
+
 			if not percent or (isPercent and (percent <= 0 or percent > 100)) then
 				return "Invalid percentage. Use '"..info.command.." X' where X is a DKP amount or a percentage between 1 and 100 (with %)."
 			end

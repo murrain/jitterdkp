@@ -489,6 +489,14 @@ function JitterDKP:showBalance(player)
 	end
 end
 
+function JitterDKP:CacheOfficerNotes()
+	for name, note, dkp in JitterDKP.dkp:dkpPairsRaidGroup() do
+		if dkp > 0 then
+			JitterDKP.guild:CacheNote(name,note,dkp)
+		end
+	 end
+end
+
 -- decays the DKP of the entire guild and redistributes to the current raid
 function JitterDKP:DecayGuild()
 	assert(self:playerIsOfficer())
