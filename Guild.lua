@@ -269,7 +269,7 @@ function guild:SetOfficerNote(name, note)
 		table.insert(self.cachedPlayers, name)
 		GuildRosterSetOfficerNote(info.index, note)
 	end
-	self:CacheNote(name,info.note.note,dkp)
+	self:CacheNote(name,info.note.note, note)
 end
 
 function guild:CacheNote(name,note,dkp)

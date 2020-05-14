@@ -490,11 +490,17 @@ function JitterDKP:showBalance(player)
 end
 
 function JitterDKP:CacheOfficerNotes()
-	for name, note, dkp in JitterDKP.dkp:dkpPairsRaidGroup() do
-		if dkp > 0 then
-			JitterDKP.guild:CacheNote(name,note,dkp)
+	for i = 1, GetNumGuildMembers() do
+		local words = {}
+		local fullname, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName, achievementPoints, achievementRank, isMobile = GetGuildRosterInfo(i)
+		-- re-use tables if we can, to help the GC
+		for word in fullname:gmatch("([^-]+)") do
+			table.insert(words,word)
 		end
-	 end
+		name = words[1]
+		realm = words[2]
+		JitterDKP.guild:CacheNote(name,note,officernote)
+	end
 end
 
 -- decays the DKP of the entire guild and redistributes to the current raid
@@ -829,6 +835,7 @@ end
 
 function JitterDKP:AceConfig3Options()
  	return {
+		name="JitterDKP Settings",
 		type = "group",
 		args = {
 			settings = {
