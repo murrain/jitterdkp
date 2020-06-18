@@ -661,7 +661,7 @@ function Auction:ProcessBids()
 	self.state = STATE_AWARDING
 	table.wipe(self.data.winners)
 	if #winners > 0 then
-		JitterDKP:broadcastToRaid(("%s wins %s for %d dkp."):format(table.concat(winners, ", "), link, points))
+		JitterDKP:broadcastRaidWarning(("%s wins %s for %d dkp."):format(table.concat(winners, ", "), link, points))
 		if not self.data.manual then
 			for _,name in ipairs(winners) do
 				table.insert(self.data.winners, name)
