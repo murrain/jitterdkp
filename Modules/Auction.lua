@@ -227,10 +227,11 @@ function Auction:IsActive()
 	return (self.state > STATE_LOOT_OPEN)
 end
 
--- AddBid(sender, bid)
+-- AddBid(sender, bid, forRoll)
 -- Adds the requested bid and returns true if successful, or false otherwise
 -- In both cases a second return value is a message to send back to the bidder
-function Auction:AddBid(sender, bid)
+function Auction:AddBid(sender, bid, forRoll)
+	print(sender .. " | " .. bid .. " | ".. forRoll)
 	assert(type(bid) == "number")
 
 	if self.state ~= STATE_AUCTION and self.state ~= STATE_AUCTION_PAUSED then
@@ -239,11 +240,11 @@ function Auction:AddBid(sender, bid)
 
 	bid = math.floor(bid)
 
-	if bid < JitterDKP.db.profile.minimum_bid then
+	if bid < JitterDKP.db.profile.minimum_bid and forRoll ~=1 then
 		return false, "Minimum bid is " .. JitterDKP.db.profile.minimum_bid .. " dkp. You only bid " .. bid .. " dkp. No bid has been entered. Please try again."
 	end
 
-	if bid > JitterDKP.dkp:GetDKP(sender) then
+	if bid > JitterDKP.dkp:GetDKP(sender) and forRoll ~=1  then
 		return false, "You do not have " .. bid .. " dkp. You only have " .. JitterDKP.dkp:GetDKP(sender) .. ". No bid has been entered. Please try again."
 	end
 
@@ -252,7 +253,7 @@ function Auction:AddBid(sender, bid)
 		if v.Name == sender then
 			if JitterDKP.db.profile.single_bid_only then
 				return false, "Only one bid per item. You have already entered a bid of " .. v.Bid .. " dkp which will be used in the auction. Good luck."
-			elseif bid < v.Bid and JitterDKP.db.profile.higher_bid_only then
+			elseif (bid < v.Bid and JitterDKP.db.profile.higher_bid_only) and forRoll ~=1 then
 				return false, "You need to bid more than " .. v.Bid .. " dkp in order to replace your previous bid. Please try again."
 			else
 				existing_bid = v
@@ -643,8 +644,12 @@ function Auction:ProcessBids()
 
 		if JitterDKP.db.profile.use_vickrey then
 			-- vickrey auction - use the 2nd bid if there is one
-			if #bids > 1 then
-				points = bids[2].Bid
+			if #bids > 1 and (bids[1].Bid + bids[2].Bid) == 0 then
+				points = 0
+			elseif #bids > 1 and (bids[1].Bid + bids[2].Bid) > 0 then
+				points = max(bids[2].Bid,JitterDKP.db.profile.minimum_bid)
+			elseif #bids == 1 and bids[1].Bid == 0 then
+				points = 0
 			else
 				-- one bid, use the minimum
 				points = JitterDKP.db.profile.minimum_bid
@@ -803,6 +808,7 @@ Auction.commands = {
 		func = function (self, info, amount)
 			local isPercent = false
 			local percent = 0
+			local forRoll = 0
 
 			if not amount then 
 				return "You have not entered a bid amount. Use '"..info.command.." X' to enter a bid of X"
@@ -819,6 +825,13 @@ Auction.commands = {
 				return "Fuck off " .. info.sender
 			end
 
+			-- check for r. If so, for a 0dkp bid into the list of bids.
+			-- this will allow for people to signify off spec bidding without being charged dkp
+			if lower:match("r$") then
+				forRoll = 1
+				amount = tonumber(0)
+			end
+
 			if not percent or (isPercent and (percent <= 0 or percent > 100)) then
 				return "Invalid percentage. Use '"..info.command.." X' where X is a DKP amount or a percentage between 1 and 100 (with %)."
 			end
@@ -827,7 +840,7 @@ Auction.commands = {
 				amount = ((percent / 100) * JitterDKP.dkp:GetDKP(info.sender))
 			end
 
-			local b, msg = Auction:AddBid(info.sender, tonumber(amount))
+			local b, msg = Auction:AddBid(info.sender, tonumber(amount), forRoll)
 			return msg
 		end,
 		help = "'$command X' to enter a bid of X on the active auction",
