@@ -231,7 +231,7 @@ end
 -- Adds the requested bid and returns true if successful, or false otherwise
 -- In both cases a second return value is a message to send back to the bidder
 function Auction:AddBid(sender, bid, forRoll)
-	print(sender .. " | " .. bid .. " | ".. forRoll)
+	--print(sender .. " | " .. bid .. " | ".. forRoll)
 	assert(type(bid) == "number")
 
 	if self.state ~= STATE_AUCTION and self.state ~= STATE_AUCTION_PAUSED then
