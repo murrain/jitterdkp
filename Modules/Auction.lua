@@ -453,7 +453,7 @@ function Auction:AuctionItem()
 	if count > 1 then
 		displayLink = link .. "x" .. count
 	end
-	JitterDKP:broadcastRaidWarning(("Bidding opened for %s.  Whisper %s : $ bid AMOUNT ... ie: $ bid 200"):format(displayLink, UnitName("player")), true)
+	JitterDKP:broadcastRaidWarning(("Bidding opened for %s.  Whisper %s : $ bid AMOUNT ... ie: $ bid 200 or $ bid r to be added to the roll pool"):format(displayLink, UnitName("player")), true)
 	JitterDKP:broadcastToRaid(("%s is now up for auction."):format(displayLink))
 	JitterDKP:broadcastToRaid(("Auction ending in %s seconds..."):format(tostring(JitterDKP.db.profile.time_to_loot)))
 	table.wipe(self.data.bids)
