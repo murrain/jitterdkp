@@ -27,6 +27,7 @@ local defaults = {
 		player_history = {},
 		item_history = {},
 		date_history = {},
+		last_auction = {}
 	}
 }
 
@@ -748,9 +749,16 @@ end
 function Auction:AwardRaidSpentDKP(winners, winningBid, forceStandby)
 	-- award DKP to just those eligible for loot if standby not enabled
 	local iswinner = {}
+	local transaction = {
+		winners = winners,
+		price = winningBid,
+		members = {}
+	}
+
 	for _,name in ipairs(winners) do
 		iswinner[name] = true
 	end
+
 	local members = {}
 	if JitterDKP.db.profile.award_dkp_to_standby or forceStandby then
 		for i = 1, GetNumGroupMembers() do
@@ -784,7 +792,12 @@ function Auction:AwardRaidSpentDKP(winners, winningBid, forceStandby)
 	-- award every raid member, sans winners, their share of the successful bid
 	for i, name in ipairs(members) do
 		JitterDKP.dkp:AddDKP(name, reward)
+		table.insert(transaction.members,name)
 	end
+
+	transaction.reward = reward
+
+	table.insert(self.db.profile.last_auction,transaction)
 
 	JitterDKP:broadcastToRaid(reward .. " dkp has been awarded to " .. tostring(#members) .. " players.")
 end
@@ -800,6 +813,36 @@ function Auction:FineDKP(player, amount)
 	end
 	JitterDKP:broadcastToRaid(player .. " has been fined " .. tostring(amount) .. " dkp.")
 	self:AwardRaidSpentDKP({player}, amount, true)
+end
+
+function Auction:ReverseLastAuction()
+	if(table.maxn(self.db.profile.last_auction) < 1) then
+		print("No auction to reverse")
+	else
+		local last_auction_index =table.maxn(self.db.profile.last_auction)
+		local reverse_table = self.db.profile.last_auction[last_auction_index]
+		print(reverse_table.price .. " DKP will be returned to", table.concat(reverse_table.winners,", "))
+		print(reverse_table.reward .. " DKP will be deducted from", table.concat(reverse_table.members,", "))
+
+		JitterDKP:displayYesNoAlert("Are you sure you wish to undo the last auction?",function()
+
+				-- give DKP back to winners
+			for _,name in ipairs(reverse_table.winners) do
+				JitterDKP.dkp:AddDKP(name, reverse_table.price)
+			end
+
+			--remove reward dkp from awarded membersd
+			for i, name in ipairs(reverse_table.members) do
+				JitterDKP.dkp:SubDKP(name, reverse_table.reward)
+			end
+
+			table.remove(self.db.profile.last_auction,last_auction_index)
+			JitterDKP:broadcastToGuild("Auction reversed: "..reverse_table.price.." returned to "..table.concat(reverse_table.winners,", "))
+			JitterDKP:printConsoleMessage("Last auction reversed")
+		end
+		)
+	end
+	
 end
 
 --[[ Commands ]]

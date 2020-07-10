@@ -132,3 +132,13 @@ admin_commands["clearHistory"] = {
 	help = "'$command' clears all History. This is destructive and non reversable",
 	requires_auction = false,
 }
+
+admin_commands["oops"] = {
+	func = function(self,info)
+		local Auction = JitterDKP:GetModule("Auction")
+		Auction:ReverseLastAuction()
+	end,
+	help = "'$command' reverses the previous auction. Awards points back to the winner and deducts points from the loot eligible raid members.",
+	requires_auction = false,
+}
+
