@@ -816,27 +816,30 @@ function Auction:FineDKP(player, amount)
 end
 
 function Auction:ReverseLastAuction()
-	if(table.maxn(self.db.profile.last_auction) < 1) then
+	self:ReverseAuction(table.maxn(self.db.profile.last_auction))
+end
+
+function Auction:ReverseAuction(auction_index)
+	if(table.maxn(self.db.profile.last_auction) < 1 or self.db.profile.last_auction[auction_index] == nil) then
 		print("No auction to reverse")
 	else
-		local last_auction_index =table.maxn(self.db.profile.last_auction)
-		local reverse_table = self.db.profile.last_auction[last_auction_index]
+		local reverse_table = self.db.profile.last_auction[auction_index]
 		print(reverse_table.price .. " DKP will be returned to", table.concat(reverse_table.winners,", "))
 		print(reverse_table.reward .. " DKP will be deducted from", table.concat(reverse_table.members,", "))
 
-		JitterDKP:displayYesNoAlert("Are you sure you wish to undo the last auction?",function()
+		JitterDKP:displayYesNoAlert("Are you sure you wish to undo the auction?",function()
 
 				-- give DKP back to winners
 			for _,name in ipairs(reverse_table.winners) do
 				JitterDKP.dkp:AddDKP(name, reverse_table.price)
 			end
 
-			--remove reward dkp from awarded membersd
+			--remove reward dkp from awarded members
 			for i, name in ipairs(reverse_table.members) do
 				JitterDKP.dkp:SubDKP(name, reverse_table.reward)
 			end
-
-			table.remove(self.db.profile.last_auction,last_auction_index)
+ 
+			table.remove(self.db.profile.last_auction,auction_index)
 			JitterDKP:broadcastToGuild("Auction reversed: "..reverse_table.price.." returned to "..table.concat(reverse_table.winners,", "))
 			JitterDKP:printConsoleMessage("Last auction reversed")
 		end
