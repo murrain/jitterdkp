@@ -237,7 +237,7 @@ function Auction:AddBid(sender, bid, forRoll)
 	local dkp = JitterDKP.dkp:GetDKP(sender)
 
 	if not dkp then
-		return "You have no dkp "..sender.."."
+		dkp = 0
 	end
 
 	if self.state ~= STATE_AUCTION and self.state ~= STATE_AUCTION_PAUSED then
@@ -802,7 +802,9 @@ function Auction:AwardRaidSpentDKP(winners, winningBid, forceStandby)
 
 	transaction.reward = reward
 
-	table.insert(self.db.profile.last_auction,transaction)
+	if(winningBid > 0) then
+		table.insert(self.db.profile.last_auction,transaction)
+	end
 
 	JitterDKP:broadcastToRaid(reward .. " dkp has been awarded to " .. tostring(#members) .. " players.")
 end
