@@ -142,3 +142,16 @@ admin_commands["oops"] = {
 	requires_auction = false,
 }
 
+admin_commands["undo"] = {
+	func = function(self,info,transaction_id)
+		local Auction = JitterDKP:GetModule("Auction")
+		local index = tonumber(transaction_id)
+		if(transaction_id == nil) then
+			Auction:PrintAuctionList()
+		else
+			Auction:ReverseAuction(index)
+		end
+	end,
+	help = "'$command (id)' reverses the results of an auction. Awards points back to the winner and deducts points from the loot eligible raid members.",
+	requires_auction = false,
+}

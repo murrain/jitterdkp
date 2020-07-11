@@ -232,7 +232,6 @@ end
 -- Adds the requested bid and returns true if successful, or false otherwise
 -- In both cases a second return value is a message to send back to the bidder
 function Auction:AddBid(sender, bid, forRoll)
-	--print(sender .. " | " .. bid .. " | ".. forRoll)
 	assert(type(bid) == "number")
 
 	if self.state ~= STATE_AUCTION and self.state ~= STATE_AUCTION_PAUSED then
@@ -819,13 +818,31 @@ function Auction:ReverseLastAuction()
 	self:ReverseAuction(table.maxn(self.db.profile.last_auction))
 end
 
+function Auction:PrintAuctionList()
+	if(table.maxn(self.db.profile.last_auction) < 1) then
+		JitterDKP:printConsoleMessage("No auctions to reverse")
+	else
+		local table_index = table.maxn(self.db.profile.last_auction)
+		local count = 0;
+		while(table_index > 0 and count <= 10)
+		do
+			local auction = self.db.profile.last_auction[table_index]
+			JitterDKP:printConsoleMessage(table_index .. ". " .. table.concat(auction.winners,", ") .. " spent "..auction.price .. " DKP.")
+			count = count + 1
+			table_index = table_index - 1
+		end
+	end
+
+end
+
 function Auction:ReverseAuction(auction_index)
+	assert(type(auction_index) == "number")
 	if(table.maxn(self.db.profile.last_auction) < 1 or self.db.profile.last_auction[auction_index] == nil) then
-		print("No auction to reverse")
+		JitterDKP:printConsoleMessage("No auction to reverse")
 	else
 		local reverse_table = self.db.profile.last_auction[auction_index]
-		print(reverse_table.price .. " DKP will be returned to", table.concat(reverse_table.winners,", "))
-		print(reverse_table.reward .. " DKP will be deducted from", table.concat(reverse_table.members,", "))
+		JitterDKP:printConsoleMessage(reverse_table.price .. " DKP will be returned to " .. table.concat(reverse_table.winners,", "))
+		JitterDKP:printConsoleMessage(reverse_table.reward .. " DKP will be deducted from " .. table.concat(reverse_table.members,", "))
 
 		JitterDKP:displayYesNoAlert("Are you sure you wish to undo the auction?",function()
 
