@@ -234,6 +234,12 @@ end
 function Auction:AddBid(sender, bid, forRoll)
 	assert(type(bid) == "number")
 
+	local dkp = JitterDKP.dkp:GetDKP(sender)
+
+	if not dkp then
+		return "You have no dkp "..sender.."."
+	end
+
 	if self.state ~= STATE_AUCTION and self.state ~= STATE_AUCTION_PAUSED then
 		return false, "There is no item up for bid."
 	end
@@ -244,8 +250,8 @@ function Auction:AddBid(sender, bid, forRoll)
 		return false, "Minimum bid is " .. JitterDKP.db.profile.minimum_bid .. " dkp. You only bid " .. bid .. " dkp. No bid has been entered. Please try again."
 	end
 
-	if bid > JitterDKP.dkp:GetDKP(sender) and forRoll ~=1  then
-		return false, "You do not have " .. bid .. " dkp. You only have " .. JitterDKP.dkp:GetDKP(sender) .. ". No bid has been entered. Please try again."
+	if bid > dkp and forRoll ~=1  then
+		return false, "You do not have " .. bid .. " dkp. You only have " .. dkp .. ". No bid has been entered. Please try again."
 	end
 
 	local existing_bid = nil
