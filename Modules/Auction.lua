@@ -377,6 +377,7 @@ function Auction:ClearItemHistory()
 		self.db.profile.player_history = {}
 		self.db.profile.item_history = {}
 		self.db.profile.date_history = {}
+		self.db.profile.last_auction = {}
 		JitterDKP:printConsoleMessage("History cleared for players, items, and dates.")
 	end
 	)
