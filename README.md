@@ -59,3 +59,7 @@ Current Admin Command List:
     '$ decay [raid]' - will decay all non-raid members or only raid members
     '$ decay_player <name>' - will decay player <name> only
     '$ debug' - print a list of settings to current chat window
+    '$ transferDKP from to amount' - Transfers dkp from one character to another. Names are case sensitive.
+    '$ oops' - reverts the last auction. DKP is returned to the winnner of the auction and DKP is deducted from each raid member
+    '$ undo' - prints a numbered list of the last 10 auctions in the format "WINNER spent X dkp"
+    '$ undo X' - revert auction #X. DKP is returned to the winnner of the auction and DKP is deducted from each raid member
