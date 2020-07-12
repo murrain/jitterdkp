@@ -42,7 +42,7 @@ To see a list of available commands, whisper '$ admin' if you are the one runnin
 
 Current Raider Command List:
 
-    '$ bid X' to enter a bid of X on the active auction or '$ bid 0' to remove active bid
+    '$ bid X' to enter a bid of X on the active auction or '$ bid 0' to remove active bid or '$ bid r' to be added to roll pool
     '$ balance' to check your current balance
     '$ check X' to check the current balance of player X
     '$ standings' to display the current dkp standings
