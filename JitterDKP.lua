@@ -46,11 +46,12 @@ local defaults = {
 		award_dkp_to_standby = true,
 		single_bid_only = false,
 		higher_bid_only = true,
+		auction_pricing_method = 1, --1: vickrey
 		dkp_decay_percent = 5,
 		decay_redistribution_percent = 100,
 		time_to_loot = 45,
 		break_ties = "random",
-		raid_group = ""
+		raid_group = "",
 	},
 	char = {
 		lastAnnounce = 0
@@ -883,12 +884,28 @@ function JitterDKP:AceConfig3Options()
 						bigStep = 25,
 						order = 3,
 					},
+					use_vickrey = {
+						name = "Use Auction Pricing Method",
+						desc = "",
+						type = "toggle",
+						order = 4,
+					},
+					auction_pricing_method = {
+						name = "Auction Pricing Method",
+						desc = "",
+						values = {"Vickrey (2nd bid)","Average of top 2"},
+						type = "select",
+						style = "dropdown",
+						order = 5,
+					},
+					--[[]
 					award_dkp_to_standby = {
 						name = "Award DKP to Offline",
 						desc = "Award spent DKP to offline raid members",
 						type = "toggle",
-						order = 4,
+						order = 6,
 					},
+					]]
 					show = {
 						name = "Show Interface Options",
 						type = "execute",

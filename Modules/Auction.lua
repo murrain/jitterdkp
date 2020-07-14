@@ -649,12 +649,16 @@ function Auction:ProcessBids()
 			winner = 1
 		end
 
+		JitterDKP:printConsoleMessage("auction_pricing " .. JitterDKP.db.profile.auction_pricing_method .. " bid 1: ".. bids[1].Bid .." bid 2: ".. bids[2].Bid)
+
 		if JitterDKP.db.profile.use_vickrey then
 			-- vickrey auction - use the 2nd bid if there is one
 			if #bids > 1 and (bids[1].Bid + bids[2].Bid) == 0 then
 				points = 0
-			elseif #bids > 1 and (bids[1].Bid + bids[2].Bid) > 0 then
+			elseif #bids > 1 and (bids[1].Bid + bids[2].Bid) > 0 and JitterDKP.db.profile.auction_pricing_method == 1 then
 				points = max(bids[2].Bid,JitterDKP.db.profile.minimum_bid)
+			elseif JitterDKP.db.profile.auction_pricing_method == 2 and bids[2].Bid > 0 and #bids > 1 then
+				points = (bids[1].Bid + bids[2].Bid) / 2
 			elseif #bids == 1 and bids[1].Bid == 0 then
 				points = 0
 			else
