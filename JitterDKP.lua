@@ -884,16 +884,18 @@ function JitterDKP:AceConfig3Options()
 						bigStep = 25,
 						order = 3,
 					},
+					--[[
 					use_vickrey = {
 						name = "Use Auction Pricing Method",
 						desc = "",
 						type = "toggle",
 						order = 4,
 					},
+					]]
 					auction_pricing_method = {
 						name = "Auction Pricing Method",
 						desc = "",
-						values = {"Vickrey (2nd bid)","Average of top 2"},
+						values = {"Vickrey (2nd bid)","Average of top 2","Winner pays their bid"},
 						type = "select",
 						style = "dropdown",
 						order = 5,

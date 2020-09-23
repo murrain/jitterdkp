@@ -460,7 +460,7 @@ function Auction:AuctionItem()
 	if count > 1 then
 		displayLink = link .. "x" .. count
 	end
-	JitterDKP:broadcastRaidWarning(("Bidding opened for %s.  Whisper %s : $ bid AMOUNT ... ie: $ bid 200 or $ bid r to be added to the roll pool"):format(displayLink, UnitName("player")), true)
+	JitterDKP:broadcastRaidWarning(("Bidding opened for %s.  Min Bid : %s. Whisper %s : $ bid AMOUNT or, $ bid r to be added to the roll pool"):format(displayLink,JitterDKP.db.profile.minimum_bid,UnitName("player")), true)
 	JitterDKP:broadcastToRaid(("%s is now up for auction."):format(displayLink))
 	JitterDKP:broadcastToRaid(("Auction ending in %s seconds..."):format(tostring(JitterDKP.db.profile.time_to_loot)))
 	table.wipe(self.data.bids)
@@ -649,9 +649,7 @@ function Auction:ProcessBids()
 			winner = 1
 		end
 
-		JitterDKP:printConsoleMessage("auction_pricing " .. JitterDKP.db.profile.auction_pricing_method .. " bid 1: ".. bids[1].Bid .." bid 2: ".. bids[2].Bid)
-
-		if JitterDKP.db.profile.use_vickrey then
+		if JitterDKP.db.profile.auction_pricing_method < 3 then
 			-- vickrey auction - use the 2nd bid if there is one
 			if #bids > 1 and (bids[1].Bid + bids[2].Bid) == 0 then
 				points = 0
