@@ -898,6 +898,10 @@ Auction.commands = {
 			if lower:match("hotpenis") or lower:match("hot penis") then
 				return "Fuck off " .. info.sender
 			end
+			
+			if lower:match("min") then
+				amount = JitterDKP.db.profile.minimum_bid
+			end
 
 			-- check for r. If so, for a 0dkp bid into the list of bids.
 			-- this will allow for people to signify off spec bidding without being charged dkp
