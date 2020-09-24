@@ -918,6 +918,10 @@ Auction.commands = {
 				amount = ((percent / 100) * JitterDKP.dkp:GetDKP(info.sender))
 			end
 
+			if (tonumber(amount) == nil) then
+				return "Invalid bid. Bid must be a number."
+			end
+
 			local b, msg = Auction:AddBid(info.sender, tonumber(amount), forRoll)
 			return msg
 		end,
