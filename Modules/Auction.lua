@@ -905,7 +905,7 @@ Auction.commands = {
 
 			-- check for r. If so, for a 0dkp bid into the list of bids.
 			-- this will allow for people to signify off spec bidding without being charged dkp
-			if lower:match("r$") then
+			if lower:match("^r$")  or lower:match("^roll$") then
 				forRoll = 1
 				amount = tonumber(0)
 			end
