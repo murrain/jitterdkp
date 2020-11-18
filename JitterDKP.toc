@@ -2,7 +2,7 @@
 ## Title : JiTTeR d.k.p |cff3355ddv1.0.2|r
 ## Name: JitterDKP
 ## Author: Gresch, DiggityDanked, Buranshe with thanks to Thanah and EminentDKP
-## Version: 1.2.5
+## Version: 1.3.0
 ## SavedVariablesPerCharacter: JitterDKPDB_Settings, JitterDKPDB_Data, JitterDKPDB_History
 ## Notes: Facilitates the quantifiable fairness of dkp while requiring as much effort as group loot.
 
