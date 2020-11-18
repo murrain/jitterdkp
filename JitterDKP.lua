@@ -25,7 +25,7 @@ local addonName, addonTable = ...
 local utils = addonTable.utilities
 local guild = addonTable.guild
 
-local JitterDKP = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceBucket-3.0", "AceConsole-3.0", "AceEvent-3.0", "BetterTimer-1.0")
+local JitterDKP = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceBucket-3.0", "AceComm-3.0", "AceConsole-3.0", "AceEvent-3.0", "BetterTimer-1.0")
 JitterDKP.guild = guild -- for debugging purposes
 JitterDKP.auction = auction
 

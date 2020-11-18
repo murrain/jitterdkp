@@ -134,6 +134,7 @@ function guild:OnCommReceived(prefix, message, channel, sender)
 			return
 		end
 		if command == "N" or command == "O" then
+			--message to update note/officer note
 			local key = command == "N" and "note" or "officernote"
 			local success, names, notes = self:Deserialize(rest)
 			if success then
@@ -148,10 +149,13 @@ function guild:OnCommReceived(prefix, message, channel, sender)
 			GuildRoster()
 		end -- N or O
 		if command == "H" then
-			local success, history = self:Deserialize(rest)
+			--message to update history
+			local success, winners, points, item, time = self:Deserialize(rest)
 			local Auction = JitterDKP:GetModule("Auction")
-			Auction:AddHistory(history.winners,history.points,"item:"..history.item,history.time)
-			JitterDKP:printConsoleMessage("Item history comm received from " .. sender)
+			--("%s wins %s for %d dkp."):format(table.concat(winners, ", "), link, points))
+			Auction:AddHistory(winners,points,item,time)
+			--JitterDKP:printConsoleMessage("Item history comm [%s %d %s %s] received from %s"):format(table.concat(winners, ","), points, item, sender)
+			JitterDKP:printConsoleMessage("Item history" .. item .." received from " .. sender)
 		end -- H
 	end
 end
@@ -231,6 +235,14 @@ function guild:broadcastChanges(type, names, notes)
 	broadcastIdx = broadcastIdx + 1
 	self:SendCommMessage(ADDON_MSG_PREFIX, "Event " .. broadcastIdx, "GUILD", nil, "ALERT")
 	self:SendCommMessage(ADDON_MSG_PREFIX, type .. " " .. broadcastIdx .. " " .. self:Serialize(names, notes), "GUILD")
+end
+
+function guild:broadcastHistory(type,winners,points,item,time)
+	-- send an alert with an integer first, before sending the bulk event
+	-- this lets the receiver ignore the bulk event if it finishes arriving after they get a guild update
+	broadcastIdx = broadcastIdx + 1
+	self:SendCommMessage(ADDON_MSG_PREFIX, "Event " .. broadcastIdx, "GUILD", nil, "ALERT")
+	self:SendCommMessage(ADDON_MSG_PREFIX, type .. " " .. broadcastIdx .. " " .. self:Serialize(winners,points,item,time), "GUILD")
 end
 
 -- validates that the local info has the correct index for each name

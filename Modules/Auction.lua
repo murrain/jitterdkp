@@ -288,7 +288,8 @@ function Auction:AddHistory(winners,points,item,time)
 	local type, itemId = strsplit(":", item)
 	for _,winner in ipairs(winners) do
 		local p_history = {
-			item = itemId,
+			item =
+			itemId,
 			price = points,
 			date = time
 		}
@@ -670,8 +671,12 @@ function Auction:ProcessBids()
 		table.remove(bids, winner)
 	end
 	local now = date("%m/%d/%Y")
+
+	--add history for item then broadcast that message to guild using acecomm
 	self:AddHistory(winners,points,link,now)
 	-- send message to raid award for all winners, award DKP, and transition to awarding state
+	guild:broadcastHistory("H",winners,points,link,now)
+
 	self.state = STATE_AWARDING
 	table.wipe(self.data.winners)
 	if #winners > 0 then
